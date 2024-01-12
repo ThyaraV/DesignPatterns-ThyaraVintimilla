@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using DesignPatterns.ModelBuilders;
+using DesignPatterns.Factories;
 
 namespace DesignPatterns.Controllers
 {
@@ -46,11 +47,21 @@ namespace DesignPatterns.Controllers
             return View(model);
         }
 
+        private void CreateVehicle(Creator creator)
+        {
+            _vehicleRepository.AddVehicle(creator.Create());
+        }
+
         [HttpGet]
         public IActionResult AddMustang()
         {
+            /*
             var builder=new CarBuilder();
             _vehicleRepository.AddVehicle(builder.Build());
+            return Redirect("/");*/
+
+            var creator = new FordMustangCreator();
+            CreateVehicle(creator);
             return Redirect("/");
         }
 
@@ -65,11 +76,8 @@ namespace DesignPatterns.Controllers
         [HttpGet]
         public IActionResult AddExplorer()
         {
-            var builder = new CarBuilder();
-            _vehicleRepository.AddVehicle(
-                builder
-                .SetModel("Explorer")
-                .Build());
+            var creator = new FordExplorerCreator();
+            CreateVehicle(creator);
             return Redirect("/");
         }
 
