@@ -7,9 +7,23 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using DesignPatterns.ModelBuilders;
 
 namespace DesignPatterns.Controllers
 {
+    public class Director<T>
+    {
+        public IBuilder<T> Builder { get; set; }
+
+        public Director(IBuilder<T> builder)
+        {
+            Builder = builder;
+        }
+        public T Build()
+        {
+            return Builder.Build();
+        }
+    }
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -35,14 +49,27 @@ namespace DesignPatterns.Controllers
         [HttpGet]
         public IActionResult AddMustang()
         {
-            _vehicleRepository.AddVehicle(new Car("red","Ford","Mustang"));
+            var builder=new CarBuilder();
+            _vehicleRepository.AddVehicle(builder.Build());
+            return Redirect("/");
+        }
+
+        public IActionResult AddMoto()
+        {
+            
+            var builder = new MotocycleBuilder();
+            _vehicleRepository.AddVehicle(builder.Build());
             return Redirect("/");
         }
 
         [HttpGet]
         public IActionResult AddExplorer()
         {
-            _vehicleRepository.AddVehicle(new Car("red", "Ford", "Explorer"));
+            var builder = new CarBuilder();
+            _vehicleRepository.AddVehicle(
+                builder
+                .SetModel("Explorer")
+                .Build());
             return Redirect("/");
         }
 
