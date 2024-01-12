@@ -81,6 +81,13 @@ namespace DesignPatterns.Controllers
             return Redirect("/");
         }
 
+        public IActionResult AddEscape()
+        {
+            var creator = new FordEscapeCreator();
+            CreateVehicle(creator);
+            return Redirect("/");
+        }
+
         [HttpGet]
         public IActionResult StartEngine(string id)
         {
