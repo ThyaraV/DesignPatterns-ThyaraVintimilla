@@ -14,12 +14,14 @@ namespace DesignPatterns.Controllers
 {
     public class Director<T>
     {
+        // Propiedad que almacena una referencia a cualquier objeto que implemente 'IBuilder<T>'.
         public IBuilder<T> Builder { get; set; }
-
+        // Constructor que inicializa 'Director' con una instancia específica de 'IBuilder<T>'.
         public Director(IBuilder<T> builder)
         {
             Builder = builder;
         }
+        // Método que delega la construcción del objeto a la instancia de 'IBuilder<T>'.
         public T Build()
         {
             return Builder.Build();
@@ -27,31 +29,40 @@ namespace DesignPatterns.Controllers
     }
     public class HomeController : Controller
     {
+        // Campos para el repositorio de vehículos y el logger.
         private readonly ILogger<HomeController> _logger;
 
         private readonly IVehicleRepository _vehicleRepository;
 
+        // Constructor que inyecta las dependencias.
         public HomeController(IVehicleRepository vehicleRepository,ILogger<HomeController> logger)
         {
             _vehicleRepository = vehicleRepository;
             _logger = logger;
         }
 
+        // Método de acción para manejar la ruta por defecto '/'.
         public IActionResult Index()
         {
+            // Creación y configuración del modelo de vista.
             var model = new HomeViewModel();
             model.Vehicles = _vehicleRepository.GetVehicles();
+            // Manejo de errores a través de la QueryString.
             string error = Request.Query.ContainsKey("error") ? Request.Query["error"].ToString() : null;
             ViewBag.ErrorMessage = error;
 
+            // Retorna la vista con el modelo.
             return View(model);
         }
 
+        // Método privado para crear y añadir un vehículo al repositorio.
         private void CreateVehicle(Creator creator)
         {
             _vehicleRepository.AddVehicle(creator.Create());
         }
 
+         // Métodos de acción para añadir diferentes tipos de vehículos.
+         // Utilizan el patrón Factory Method para la creación de vehículos.
         [HttpGet]
         public IActionResult AddMustang()
         {
@@ -88,6 +99,8 @@ namespace DesignPatterns.Controllers
             return Redirect("/");
         }
 
+         // Métodos de acción para interactuar con los vehículos (iniciar motor, añadir gas, detener motor).
+         // Manejo de excepciones para errores durante la operación.
         [HttpGet]
         public IActionResult StartEngine(string id)
         {
